@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title>SAX, STEN OCH P&Aring;SE</title>
+<link rel="stylesheet" href="css/styles.css" type="text/css" />
+<script type="text/javascript" src="js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript" src="js/Materials.js" charset="UTF-8"></script>
+<script type="text/javascript" src="js/Player.js" charset="UTF-8"></script>
+<script type="text/javascript" src="js/Computer.js" charset="UTF-8"></script>
+<script type="text/javascript" language="javascript">
+
+  var materials = new PlayMaterialsClass();		// contains resources that are almost shared between both Computer and Player classes
+  var computer = new ComputerClass();			// contains methods custom to the computer class
+  var player = new PlayerClass();				// contains methods that are exclusive to the player class
+  
+  /* When the Spela (Play) button is clicked  */
+  function spela_click(){
+	  
+	  // 1. Save Computer randomized string in hidden input value element
+	  computer.PersistComputerChoosenPictureToHiddenInput(materials.playMaterials[computer.Randomize() - 1][1]);
+	  
+	  // 2. Get player choice from window.prompt
+	  var playerChoice = parseInt(player.CaptureInputFromUser());
+	  
+	  if ((playerChoice !== "") || (playerChoice !== null)) {		// check if a player didn't click the ok window.prompt button minus adding an input
+
+		  if((playerChoice >= 1) && (playerChoice <= 3)){		// check to see if player value selected was between 1 and 3 inclusive all boundaries
+				  
+				  // 3. Persist player image choice to hidden input value element
+				  player.PersistPlayerChoosenPictureToHiddenInput(materials.playMaterials[computer.Randomize() - 1][1]);
+		
+				 // 4. Retrieve the most previous attempts to play for both players
+				  var computerBothPlayerPlayedAttempts = parseInt($('#currentPlayAttempsBothPlayerAndComputerValueHolder').val());
+				
+				 // 5. Update games attempted for each player
+				 materials.UpdatePlayedGamesAttempt(computerBothPlayerPlayedAttempts);
+				
+				// 6. Determine the winner of current encounter
+				 player.CheckIfPlayerWonBasedOnEarlierComputerInput();
+				 
+				 // 7. Fill the images to be visible
+				 materials.AppendImagesToRespectiveSides();
+		  }
+		  else
+		  	alert("Du måste välja ett tal mellan 1 och 3 inklusiv");
+	  }
+	  else
+	  	 alert("Du måste ange ett nummer för att kunna fortsätta!!!!!");
+  }
+  
+  function starta_om_Click(){
+	  var strconfirm = confirm("Vill du verkligen starta om spelet helt nytt? ");
+	  document.location.reload(((strconfirm == true) ? true : false));
+  }
+</script>
+</head>
+
+<body>
+	<div style="text-align: center; width:810px; margin:0 auto;">
+    	<div id="HeaderContainer">
+        	<h1>SAX, STEN OCH PÅSE SPEL</h1>
+        </div>
+    	<div id="MainContainer">
+        	 <table class="TableClass">
+             	 <tr>
+                 	 <td><h3>Ditt Val</h3></td>
+                     <td><h3>Datorns Val</h3></td>
+                 </tr>
+                 <tr>
+                 	 <td><div class="imageStyles"><img id="dittval" /></div></td>
+                     <td><div class="imageStyles"><img id="compsval" /></div></td>
+                 </tr>
+                 <tr>
+                 	 <td class="playButtons"><input id="spela" type="button" value="Spela!" onclick="spela_click();" /></td>
+                     <td class="playButtons"><input id="starta" type="button" value="Starta helt om!" onclick="return starta_om_Click();"/></td>
+                 </tr>
+             </table>
+             <table class="TableClass" style="font-size:15px">
+             	 <tr>
+                 	<td><h3>Dina Pöang</h3></td>
+                    <td></td>
+                    <td><h3>Dators' Pöang</h3></td>
+                 </tr>
+                 <tr>
+                 	<td><label id="playerPlayAttemptsLabel">0</label></td>
+                    <td><strong>Antal gånger spelat</strong></td>
+                    <td><label id="computerPlayAttemptsLabel">0</label></td>
+                 </tr>
+                 <tr>
+                 	<td><label id="playerAttemptsWon">0</label></td>
+                    <td><strong>Vann</strong></td>
+                    <td><label id="computerAttemptsWon">0</label></td>
+                 </tr>
+                 <tr>
+                 	<td><label id="playerAttemptsTie">0</label></td>
+                    <td><strong>Oavgjort</strong></td>
+                    <td><label id="computerAttemptsTie">0</label></td>
+                 </tr>
+             </table>
+             <input type="hidden" id="datorVal" />
+             <input type="hidden" id="playerVal" />
+             <input type="hidden" id="tieVal" value="0" />
+             <input type="hidden" id="currentPlayAttempsBothPlayerAndComputerValueHolder" value="0" />
+             <input type="hidden" id="computerWins" value="0" />
+             <input type="hidden" id="playerWins" value="0" />
+        </div>
+    </div>
+</body>
+</html>
